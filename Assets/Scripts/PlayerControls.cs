@@ -12,7 +12,8 @@ public class PlayerControls : MonoBehaviour
 
     private bool grounded;
     private bool facingRight = true;
-    [SerializeField] private bool canFlip = true;
+    private bool canFlip = true;
+    private bool isAttacking = false;
 
     // Start is called before the first frame update
     void Start()
@@ -30,14 +31,21 @@ public class PlayerControls : MonoBehaviour
 
         myRB.velocity = new Vector2(h * speed, myRB.velocity.y);
 
+        //if D, right arrow key, or right analog stick player will face left
         if (myRB.velocity.x > 0 && !facingRight && canFlip)
         {
             Flip();
         }
+        //if A, left arrow key, < or left analog stick player will face left
         else if (myRB.velocity.x < 0 && facingRight && canFlip)
         {
             Flip();
         }
+
+        //if(isAttacking)
+        //{
+        //    myRB.velocity = new Vector2(0, 0);
+        //}
 
         Jump();
         WhipAttack();
@@ -80,9 +88,11 @@ public class PlayerControls : MonoBehaviour
     {
         whip.SetActive(true);
         canFlip = false;
+        isAttacking = true;
         yield return new WaitForSeconds(0.2f);
         whip.SetActive(false);
         canFlip = true;
+        isAttacking = false;
     }
 
     private void Flip()

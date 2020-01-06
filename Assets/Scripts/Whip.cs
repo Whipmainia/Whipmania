@@ -20,7 +20,7 @@ public class Whip : MonoBehaviour
     {
         if(other.gameObject.tag == "Destroyable")
         {
-            Destroy(other);
+            Destroy(other.gameObject);
         }
     }
 }
