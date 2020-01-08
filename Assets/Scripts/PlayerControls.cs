@@ -37,8 +37,19 @@ public class PlayerControls : MonoBehaviour
     {
         float h = Input.GetAxis("Horizontal");
 
-        if(canMove)
-            myRB.velocity = new Vector2(h * defaultSpeed, myRB.velocity.y);
+        if (canMove)
+        {
+            //myRB.velocity = new Vector2(h * defaultSpeed, myRB.velocity.y);           //acceleration movement
+            if (Input.GetKey(KeyCode.D))
+            {
+                transform.Translate(Vector2.right * tempSpeed * Time.deltaTime);
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                transform.Translate(Vector2.right * -tempSpeed * Time.deltaTime);
+            }
+        }
+            
 
         //if D, right arrow key, or right analog stick player will face left
         if (myRB.velocity.x > 0 && !facingRight && canFlip)
@@ -55,7 +66,7 @@ public class PlayerControls : MonoBehaviour
         {
             myRB.velocity = new Vector2(0, 0);
         }
-
+        
         if(!grounded)
         {
             canCrouch = false;
@@ -111,7 +122,8 @@ public class PlayerControls : MonoBehaviour
     {
         if(Input.GetButtonDown("Jump") && grounded)
         {
-            myRB.velocity = Vector2.up * jumpForce;
+            //myRB.velocity = Vector2.up * jumpForce;
+            myRB.velocity = new Vector2(myRB.velocity.x, jumpForce);
             grounded = false;
         }
     }
