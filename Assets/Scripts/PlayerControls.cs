@@ -3,33 +3,42 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animator))]
 public class PlayerControls : MonoBehaviour
 {
-    public float speed, jumpForce;
+    public float defaultSpeed, tempSpeed, jumpForce;
     private Rigidbody2D myRB;
+    private Animator anim;
+    private PlayerHealth playerHealth;
 
     public GameObject whip;
+    [SerializeField] float whipTimer;
 
     private bool grounded;
     private bool facingRight = true;
     private bool canFlip = true;
     private bool isAttacking = false;
+    private bool canMove = true;
+    private bool canCrouch = true;
+    [SerializeField]private bool isCrouching = false;
 
-    // Start is called before the first frame update
     void Start()
     {
+        playerHealth = FindObjectOfType<PlayerHealth>();
+        anim = GetComponent<Animator>();
         myRB = GetComponent<Rigidbody2D>();
-        myRB.gravityScale = 2;
+        myRB.gravityScale = 2.5f;
         myRB.freezeRotation = true;
         whip.SetActive(false);
+        tempSpeed = defaultSpeed;
     }
 
-    // Update is called once per frame
     void Update()
     {
         float h = Input.GetAxis("Horizontal");
 
-        myRB.velocity = new Vector2(h * speed, myRB.velocity.y);
+        if(canMove)
+            myRB.velocity = new Vector2(h * defaultSpeed, myRB.velocity.y);
 
         //if D, right arrow key, or right analog stick player will face left
         if (myRB.velocity.x > 0 && !facingRight && canFlip)
@@ -42,13 +51,60 @@ public class PlayerControls : MonoBehaviour
             Flip();
         }
 
-        //if(isAttacking)
-        //{
-        //    myRB.velocity = new Vector2(0, 0);
-        //}
+        if (isAttacking && grounded)
+        {
+            myRB.velocity = new Vector2(0, 0);
+        }
+
+        if(!grounded)
+        {
+            canCrouch = false;
+        }
+        if(grounded)
+        {
+            canCrouch = true;
+        }
+
+        if (isAttacking && !grounded)
+        {
+            canMove = false;
+        }
+        else
+        {
+            canMove = true;
+        }
 
         Jump();
+        Crouch();
         WhipAttack();
+    }
+
+    private void Crouch()
+    {
+        if(isCrouching)
+        {
+            defaultSpeed = tempSpeed / 2;
+        }
+        else
+        {
+            defaultSpeed = tempSpeed;
+        }
+
+        if (canCrouch)
+        {
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                isCrouching = true;
+                anim.SetBool("Crouch", true);
+            }
+
+            if (Input.GetKeyUp(KeyCode.S))
+            {
+                isCrouching = false;
+                anim.SetBool("Crouch", false);
+                
+            }
+        }
     }
 
     private void Jump()
@@ -57,6 +113,14 @@ public class PlayerControls : MonoBehaviour
         {
             myRB.velocity = Vector2.up * jumpForce;
             grounded = false;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.gameObject.tag == "Enemy")
+        {
+            playerHealth.HurtPlayer(1);
         }
     }
 
@@ -87,10 +151,12 @@ public class PlayerControls : MonoBehaviour
     private IEnumerator WhipTimer()
     {
         whip.SetActive(true);
+        canMove = false;
         canFlip = false;
         isAttacking = true;
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(whipTimer);
         whip.SetActive(false);
+        canMove = true;
         canFlip = true;
         isAttacking = false;
     }

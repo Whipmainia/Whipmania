@@ -22,5 +22,10 @@ public class Whip : MonoBehaviour
         {
             Destroy(other.gameObject);
         }
+
+        if(other.gameObject.tag == "Enemy")
+        {
+            other.GetComponent<EnemyHealth>().HurtEnemy(1);
+        }
     }
 }
