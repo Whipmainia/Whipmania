@@ -37,19 +37,25 @@ public class PlayerControls : MonoBehaviour
     {
         float h = Input.GetAxis("Horizontal");
 
+        anim.SetFloat("Speed", Mathf.Abs(myRB.velocity.x));
+
         if (canMove)
         {
-            //myRB.velocity = new Vector2(h * defaultSpeed, myRB.velocity.y);           //acceleration movement
-            if (Input.GetKey(KeyCode.D))
-            {
-                transform.Translate(Vector2.right * tempSpeed * Time.deltaTime);
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                transform.Translate(Vector2.right * -tempSpeed * Time.deltaTime);
-            }
+            myRB.velocity = new Vector2(h * defaultSpeed, myRB.velocity.y);           //acceleration movement
+                                                                                      //if (Input.GetKey(KeyCode.D))
+                                                                                      //{
+                                                                                      //    transform.Translate(Vector2.right * tempSpeed * Time.deltaTime);
+                                                                                      //}
+                                                                                      //if (Input.GetKey(KeyCode.A))
+                                                                                      //{
+                                                                                      //    transform.Translate(Vector2.right * -tempSpeed * Time.deltaTime);
+                                                                                      //}
         }
-            
+
+        if (!canMove)
+        {
+            myRB.velocity = new Vector2(0, myRB.velocity.y);
+        }
 
         //if D, right arrow key, or right analog stick player will face left
         if (myRB.velocity.x > 0 && !facingRight && canFlip)
@@ -64,7 +70,7 @@ public class PlayerControls : MonoBehaviour
 
         if (isAttacking && grounded)
         {
-            myRB.velocity = new Vector2(0, 0);
+            myRB.velocity = new Vector2(myRB.velocity.x * 0, myRB.velocity.y * 0);
         }
         
         if(!grounded)
@@ -156,6 +162,7 @@ public class PlayerControls : MonoBehaviour
     {
         if(Input.GetButtonDown("Fire1"))
         {
+            anim.SetFloat("Speed", 0);
             StartCoroutine(WhipTimer());
         }
     }
