@@ -76,7 +76,7 @@ public class PlayerControls : MonoBehaviour
         {
             canMove = true;
         }
-        
+
         if(!grounded)
         {
             canCrouch = false;
@@ -123,7 +123,7 @@ public class PlayerControls : MonoBehaviour
             {
                 isCrouching = false;
                 anim.SetBool("Crouch", false);
-                
+
             }
         }
     }
@@ -134,7 +134,6 @@ public class PlayerControls : MonoBehaviour
         {
             //myRB.velocity = Vector2.up * jumpForce;
             myRB.velocity = new Vector2(myRB.velocity.x, jumpForce);
-            grounded = false;
         }
     }
 
