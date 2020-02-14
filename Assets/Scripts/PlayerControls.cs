@@ -35,7 +35,7 @@ public class PlayerControls : MonoBehaviour
 
     void Update()
     {
-        float h = Input.GetAxis("Horizontal");
+        float h = Input.GetAxisRaw("Horizontal");
 
         anim.SetFloat("Speed", Mathf.Abs(myRB.velocity.x));
 
@@ -72,6 +72,10 @@ public class PlayerControls : MonoBehaviour
         {
             myRB.velocity = new Vector2(myRB.velocity.x * 0, myRB.velocity.y * 0);
         }
+        else if(isAttacking && !grounded)
+        {
+            canMove = true;
+        }
         
         if(!grounded)
         {
@@ -84,11 +88,11 @@ public class PlayerControls : MonoBehaviour
 
         if (isAttacking && !grounded)
         {
-            canMove = false;
+            //canMove = true;
         }
         else
         {
-            canMove = true;
+            //canMove = true;
         }
 
         Jump();
