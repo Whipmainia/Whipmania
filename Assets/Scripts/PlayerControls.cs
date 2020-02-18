@@ -14,7 +14,7 @@ public class PlayerControls : MonoBehaviour
     public GameObject whip;
     [SerializeField] float whipTimer;
 
-    private bool grounded;
+    //private bool grounded;
     private bool facingRight = true;
     private bool canFlip = true;
     private bool isAttacking = false;
@@ -68,36 +68,41 @@ public class PlayerControls : MonoBehaviour
             Flip();
         }
 
-        if (isAttacking && grounded)
+        if (isAttacking && isGrounded)
         {
             myRB.velocity = new Vector2(myRB.velocity.x * 0, myRB.velocity.y * 0);
         }
-        else if(isAttacking && !grounded)
+        else if(isAttacking && !isGrounded)
         {
             canMove = true;
         }
         
-        if(!grounded)
-        {
-            canCrouch = false;
-        }
-        if(grounded)
-        {
-            canCrouch = true;
-        }
+        //if(!grounded)
+        //{
+        //    canCrouch = false;
+        //}
+        //if(grounded)
+        //{
+        //    canCrouch = true;
+        //}
 
-        if (isAttacking && !grounded)
-        {
-            //canMove = true;
-        }
-        else
-        {
-            //canMove = true;
-        }
+        //if (isAttacking && !grounded)
+        //{
+        //    //canMove = true;
+        //}
+        //else
+        //{
+        //    //canMove = true;
+        //}
 
-        Jump();
         Crouch();
         WhipAttack();
+    }
+
+    private void FixedUpdate()
+    {
+        AdvancedJump();
+        //Jump();
     }
 
     private void Crouch()
@@ -128,15 +133,64 @@ public class PlayerControls : MonoBehaviour
         }
     }
 
-    private void Jump()
+    public bool isGrounded;
+    public Transform groundPos;
+    public float checkRadius;
+    public LayerMask whatIsGround;
+    private float jumpTimeCount;
+    public float jumpTime;
+    [SerializeField]private bool isJumping;
+
+    private void AdvancedJump()
     {
-        if(Input.GetButtonDown("Jump") && grounded)
+        isGrounded = Physics2D.OverlapCircle(groundPos.position, checkRadius, whatIsGround);
+
+        if(isGrounded && Input.GetButtonDown("Jump"))
         {
-            //myRB.velocity = Vector2.up * jumpForce;
-            myRB.velocity = new Vector2(myRB.velocity.x, jumpForce);
-            grounded = false;
+            isJumping = true;
+            jumpTimeCount = jumpTime;
+            //myRB.velocity = Vector2.up * jumpForce * Time.deltaTime;
+            myRB.velocity = new Vector2(myRB.velocity.x, jumpForce * Time.deltaTime);
+        }
+
+        if(Input.GetButton("Jump") && isJumping)
+        {
+            if(jumpTimeCount > 0)
+            {
+               // myRB.velocity = Vector2.up * jumpForce * Time.deltaTime;
+                myRB.velocity = new Vector2(myRB.velocity.x, jumpForce * Time.deltaTime);
+                jumpTimeCount -= Time.deltaTime;
+            }
+            else
+            {
+                isJumping = false;
+            }
+        }
+
+        if(Input.GetButtonUp("Jump"))
+        {
+            isJumping = false;
+        }
+
+        if(!isGrounded)
+        {
+            canFlip = false;
+        }
+        else
+        {
+            canFlip = true;
         }
     }
+
+    //private void Jump()
+    //{
+    //    if(Input.GetButtonDown("Jump") && grounded)
+    //    {
+    //        //myRB.velocity = Vector2.up * jumpForce;
+    //        myRB.velocity = new Vector2(myRB.velocity.x, jumpForce);
+    //        grounded = false;
+    //    }
+    //}
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -150,7 +204,7 @@ public class PlayerControls : MonoBehaviour
     {
         if(other.gameObject.tag == "Ground")
         {
-            grounded = true;
+            //grounded = true;
         }
     }
 
@@ -158,7 +212,7 @@ public class PlayerControls : MonoBehaviour
     {
         if (other.gameObject.tag == "Ground")
         {
-            grounded = false;
+            //grounded = false;
         }
     }
 
@@ -186,8 +240,11 @@ public class PlayerControls : MonoBehaviour
 
     private void Flip()
     {
-        facingRight = !facingRight;
+        if(canFlip)
+        {
+            facingRight = !facingRight;
 
-        transform.Rotate(0, 180f, 0);
+            transform.Rotate(0, 180f, 0);
+        }
     }
 }
