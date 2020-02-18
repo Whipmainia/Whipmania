@@ -128,7 +128,7 @@ public class PlayerControls : MonoBehaviour
             {
                 isCrouching = false;
                 anim.SetBool("Crouch", false);
-                
+
             }
         }
     }
@@ -179,6 +179,8 @@ public class PlayerControls : MonoBehaviour
         else
         {
             canFlip = true;
+            //myRB.velocity = Vector2.up * jumpForce;
+            myRB.velocity = new Vector2(myRB.velocity.x, jumpForce);
         }
     }
 
