@@ -1018,6 +1018,7 @@ MonoBehaviour:
   whip: {fileID: 230106793}
   whipTimer: 0.5
   isCrouching: 0
+  rollSpeed: 6
 --- !u!50 &262751193
 Rigidbody2D:
   serializedVersion: 4

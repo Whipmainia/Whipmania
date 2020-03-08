@@ -19,8 +19,9 @@ public class PlayerControls : MonoBehaviour
 	private bool isAttacking = false;
 	private bool canMove = true;
 	private bool canCrouch = true;
+	private bool isRolling = false;
 	[SerializeField] private bool isCrouching = false;
-
+	[SerializeField] private float rollSpeed;
 	void Start()
 	{
 		playerHealth = FindObjectOfType<PlayerHealth>();
@@ -100,6 +101,7 @@ public class PlayerControls : MonoBehaviour
 		Jump();
 		Crouch();
 		WhipAttack();
+		Roll();
 	}
 
 	private void Crouch()
@@ -113,7 +115,7 @@ public class PlayerControls : MonoBehaviour
 			defaultSpeed = tempSpeed;
 		}
 
-		if (canCrouch)
+		if (canCrouch && myRB.velocity.x == 0)
 		{
 			if (Input.GetKeyDown(KeyCode.S))
 			{
@@ -185,6 +187,29 @@ public class PlayerControls : MonoBehaviour
 		isAttacking = false;
 	}
 
+	private void Roll()
+	{
+		if (Input.GetKeyDown(KeyCode.S) && myRB.velocity.x != 0)
+		{
+			StartCoroutine(RollTimer());
+		}
+
+		if (isRolling)
+		{
+			myRB.velocity = new Vector2((facingRight ? 1 : -1) * rollSpeed, 0);
+		}
+	}
+
+	private IEnumerator RollTimer()
+	{
+		canMove = false;
+		canFlip = false;
+		isRolling = true;
+		yield return new WaitForSeconds((float) 0.5);
+		canMove = true;
+		canFlip = true;
+		isRolling = false;
+	}
 	private void Flip()
 	{
 		facingRight = !facingRight;
