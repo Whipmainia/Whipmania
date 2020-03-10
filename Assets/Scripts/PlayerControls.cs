@@ -19,9 +19,11 @@ public class PlayerControls : MonoBehaviour
 	private bool isAttacking = false;
 	private bool canMove = true;
 	private bool canCrouch = true;
+	private bool canRoll = true;
 	private bool isRolling = false;
 	[SerializeField] private bool isCrouching = false;
 	[SerializeField] private float rollSpeed;
+	[SerializeField] private float rollCooldown;
 	void Start()
 	{
 		playerHealth = FindObjectOfType<PlayerHealth>();
@@ -189,9 +191,10 @@ public class PlayerControls : MonoBehaviour
 
 	private void Roll()
 	{
-		if (Input.GetKeyDown(KeyCode.S) && myRB.velocity.x != 0)
+		if (canRoll && Input.GetKeyDown(KeyCode.S) && myRB.velocity.x != 0)
 		{
 			StartCoroutine(RollTimer());
+			StartCoroutine(RollManager());
 		}
 
 		if (isRolling)
@@ -205,10 +208,19 @@ public class PlayerControls : MonoBehaviour
 		canMove = false;
 		canFlip = false;
 		isRolling = true;
+		anim.SetBool("Crouch", true);
 		yield return new WaitForSeconds((float) 0.5);
+		anim.SetBool("Crouch", false);
 		canMove = true;
 		canFlip = true;
 		isRolling = false;
+	}
+
+	private IEnumerator RollManager()
+	{
+		canRoll = false;
+		yield return new WaitForSeconds(rollCooldown);
+		canRoll = true;
 	}
 	private void Flip()
 	{
